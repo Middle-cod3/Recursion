@@ -16,7 +16,27 @@ void printVector(vector<int> &arr)
         cout << it << " ";
     }
 }
+void printVectorString(vector<string> &arr)
+{
+    for (auto it : arr)
+    {
+        cout << it << endl;
+    }
+}
 void printVectorVector(vector<vector<int>> x)
+{
+    for (const auto &row : x)
+    {
+        cout << "[";
+        for (const auto &element : row)
+        {
+            cout << element << " ";
+        }
+        cout << "]";
+        cout << std::endl;
+    }
+}
+void printVectorVectorString(vector<vector<string>> x)
 {
     for (const auto &row : x)
     {
@@ -356,23 +376,45 @@ TC:-
 Sc:-
 */
 // Approach 1(Using extra space for remember elem picked)-------->>
+// TC :- We know there're n! permutations generating & we loop from 0->n so its 0(n!*n)
+// SC :- If we ignore that ans store n! permutations then we're usign 0(n) for the DS and 0(n) for map array
+// This map is extra so 0(n)+0(n) ;Also if you ignore auxiliary sapce that's 0(n) for recursion call bcz its depth of recursion.
 void generatePermutations(vector<int> &arr, int freq[], vector<vector<int>> &ans, vector<int> &ds)
 {
-
     if (ds.size() == arr.size())
     {
         ans.push_back(ds);
-        return;
+        for (auto it : ans)
+        {
+            for (auto e : it)
+            {
+                cout << "Answer-- " << e;
+            }
+        }
+        cout << endl;
     }
     for (int i = 0; i < arr.size(); i++)
     {
+        // if (i == 1)
+        //     break;
         if (!freq[i])
         {
+            cout << "Index " << i << endl;
             ds.push_back(arr[i]);
+            for (auto it : ds)
+            {
+                cout << "before ds- " << it<<" ,,,";
+            }
+            cout << endl;
             freq[i] = 1;
             generatePermutations(arr, freq, ans, ds);
-            freq[i] = 0;
             ds.pop_back();
+             for (auto it : ds)
+            {
+                cout << "after ds- " << it;
+            }
+            cout << endl;
+            freq[i] = 0;
         }
     }
 }
@@ -380,13 +422,146 @@ vector<vector<int>> printPermutations(vector<int> &arr)
 {
     vector<vector<int>> ans;
     vector<int> ds;
-    int freq[arr.size()]; // generate a array same size of arr
+    int freq[arr.size()];
     for (int i = 0; i < arr.size(); i++)
+    {
         freq[i] = 0;
+    }
     generatePermutations(arr, freq, ans, ds);
     return ans;
 }
-// Approach 2-------->>
+// Approach 2 (using swap technique)-------->>
+// TC :-  We know there're n! permutations generating & we loop from 0->n so its 0(n!*n)
+// SC :-We're not using any ds nither any map.Only using auxiliary space of the recursion depth 0(n),so its 0(1)
+void generatePermutaionsAp2(int ind, vector<int> &arr, vector<vector<int>> &ans)
+{
+    if (ind == arr.size())
+    {
+        ans.push_back(arr);
+        return;
+    }
+    for (int i = ind; i < arr.size(); i++)
+
+    {
+        swap(arr[ind], arr[i]);
+        generatePermutaionsAp2(ind + 1, arr, ans);
+        swap(arr[ind], arr[i]);
+    }
+}
+vector<vector<int>> printPermutationAp2(vector<int> &arr)
+{
+    vector<vector<int>> ans;
+    generatePermutaionsAp2(0, arr, ans);
+    return ans;
+}
+
+/*
+10. N Queen Peoblem
+Ans :- PLacing N Queens on n*n chessboard such that no two queens can attack each other.
+Given n,return all distinct solution to the n-queens puzzle.
+TC :-
+SC :-
+*/
+// Approach 1 using
+bool isSafe(int row, int col, vector<string> board, int n)
+{
+    // Check upper left corner elem
+    int duprow = row, dupcol = col;
+    while (row >= 0 && col >= 0)
+    {
+        if (board[row][col] == 'Q')
+            return false;
+        row--;
+        col--;
+    }
+    // Check middle left elem
+    col = dupcol;
+    row = duprow;
+    while (col >= 0)
+    {
+        if (board[row][col] == 'Q')
+            return false;
+        col--;
+    }
+    // Check lower left corner elem
+    row = duprow;
+    col = dupcol;
+    while (row < n && col >= 0)
+    {
+        if (board[row][col] == 'Q')
+            return false;
+        row++;
+        col--;
+    }
+    return true;
+}
+void solve(int col, vector<string> &board, vector<vector<string>> &ans, int n)
+{
+    if (col == n)
+    {
+        ans.push_back(board);
+        return;
+    }
+    for (int row = 0; row < n; row++)
+    {
+        if (isSafe(row, col, board, n))
+        {
+            board[row][col] = 'Q';
+            solve(col + 1, board, ans, n);
+            board[row][col] = '.';
+        }
+    }
+}
+vector<vector<string>> solveNqueens(int n)
+{
+    vector<vector<string>> ans;
+    vector<string> board(n);
+    string s(n, '.');
+    for (int i = 0; i < n; i++)
+    {
+        board[i] = s;
+    }
+    solve(0, board, ans, n);
+    return ans;
+}
+// Approach 2 using Hashing to maintain a list to check wheather this position is right or not
+void solveAp2(int col, vector<string> &board, vector<vector<string>> &ans, vector<int> &leftrow, vector<int> &upperDiagonal, vector<int> &lowerDiagonal, int n)
+
+{
+    if (col == n)
+    {
+        ans.push_back(board);
+        return;
+    }
+    for (int row = 0; row < n; row++)
+    {
+        if (leftrow[row] == 0 && lowerDiagonal[row + col] == 0 && upperDiagonal[n - 1 + col - row] == 0)
+        {
+            board[row][col] = 'Q';
+            leftrow[row] = 1;
+            lowerDiagonal[row + col] = 1;
+            upperDiagonal[n - 1 + col - row] = 1;
+            solveAp2(col + 1, board, ans, leftrow, upperDiagonal, lowerDiagonal, n);
+            board[row][col] = '.';
+            leftrow[row] = 0;
+            lowerDiagonal[row + col] = 0;
+            upperDiagonal[n - 1 + col - row] = 0;
+        }
+    }
+}
+vector<vector<string>> solveNqueensAp2(int n)
+{
+    vector<vector<string>> ans;
+    vector<string> board(n);
+    string s(n, '.');
+    for (int i = 0; i < n; i++)
+    {
+        board[i] = s;
+    }
+    vector<int> leftrow(n, 0), upperDiagonal(2 * n - 1, 0), lowerDiagonal(2 * n - 1, 0);
+    solveAp2(0, board, ans, leftrow, upperDiagonal, lowerDiagonal, n);
+    return ans;
+}
 int main()
 {
 #ifndef ONLINE_JUDGE
@@ -395,16 +570,16 @@ int main()
 #endif
     // First layout column 2 and then new group--->>>
     // Start code from here ------>>
-    // int arr[] = {1, 2, 1};
-    // int N = 3;
+    int arr[] = {1, 2};
+    int N = 2;
     // int K = 2;
-    // vector<int> ds;
-    // printAllSubsequences(0, N, arr, ds);
+    vector<int> ds;
+    printAllSubsequences(0, N, arr, ds);
     // printAllSubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // printAnySubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // cout << countSubsequencesWhoseSumIsK(0, 0, N, arr, K);
-    vector<int> arr = {1, 2, 3};
-    int target = 3;
+    // vector<int> arr = {1, 2, 3};
+    // int target = 3;
     // vector<vector<int>> z = combinationSum(arr, target);
     // set<vector<int>> z = combinationSumIIBruteforce(arr, target);
     // vector<vector<int>> z = combinationSumIIoptimal(arr, target);
@@ -421,9 +596,23 @@ int main()
     // vector<int> z = subsetSumI(arr, target);
     // vector<vector<int>> z = subsetSumIIBetter(arr, target);
     // vector<vector<int>> z = subsetSumIIOptimal(arr);
-    vector<vector<int>> z = printPermutations(arr);
-
-    printVectorVector(z);
+    // vector<vector<int>> z = printPermutations(arr);
+    // vector<vector<int>> z = printPermutationAp2(arr);
+    // printVectorVector(z);
+    // N-queen problem
+    // int n = 4; // bcz we're using n*n chessboard
+    // vector<vector<string>> ans = solveNqueens(n);
+    // vector<vector<string>> ans = solveNqueensAp2(n);
+    // for (int i = 0; i < ans.size(); i++)
+    // {
+    //     cout << "Arrangments " << i + 1 << "\n";
+    //     for (int j = 0; j < ans[0].size(); j++)
+    //     {
+    //         cout << ans[i][j];
+    //         cout << endl;
+    //     }
+    //     cout << endl;
+    // }
 
     // End code here-------->>
     return 0;
