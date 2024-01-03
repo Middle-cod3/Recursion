@@ -20,12 +20,39 @@ using namespace std;
 // 12) Print Fibonacci number upto n
 // 13)Print all subsequences whose sum is K
 
-
-
-
-
-
 // #####################END QS HERE #######################
+void generatePermutations(vector<int> &arr,  vector<vector<int>> &ans, vector<int> &ds, int freq[])
+{
+  if (ds.size() == arr.size())
+  {
+    ans.push_back(ds);
+    return;
+  }
+  for (int i = 0; i < arr.size(); i++)
+  {
+    if (!freq[i])
+    {
+      ds.push_back(arr[i]);
+      freq[i] = 1;
+      generatePermutations(arr, ans, ds, freq);
+      ds.pop_back();
+      freq[i] = 0;
+    }
+  }
+}
+vector<vector<int>> permutation(vector<int> &arr, int n)
+{
+  vector<vector<int>> ans;
+  vector<int> ds;
+  int freq[arr.size()];
+  for (int i = 0; i < n; i++)
+  {
+    freq[i] = 0;
+  }
+  sort(arr.begin(),arr.end());
+  generatePermutations(arr,ans, ds, freq);
+  return ans;
+}
 
 int main()
 {
@@ -36,6 +63,19 @@ int main()
   // First layout column 2 and then new group--->>>
   // Start code from here ------>>
 
+  vector<int> arr = {3, 2, 1};
+  int n = 3;
+  vector<vector<int>> z = permutation(arr, n);
+  for (auto it : z)
+  {
+    cout << "[";
+    for (auto y : it)
+    {
+      cout << y << " ";
+    }
+    cout << "]";
+    cout << endl;
+  }
 
   // End code here-------->>
   return 0;
