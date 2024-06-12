@@ -66,7 +66,30 @@ Tc :- For every index there are couple of options 2^n * for every subsequences w
 Sc :- If you look out recursion tree its going from starting index to ending index not more then
     ending index ,Max recursion calls == size of the array, so its 0(N)
 */
-void printAllSubsequences(int ind, int N, int arr[], vector<int> ds)
+vector<string> AllPossibleStrings(string s)
+{
+    int n = s.length();
+    vector<string> ans;
+    for (int num = 0; num < (1 << n); num++)
+    {
+        string sub = "";
+        for (int i = 0; i < n; i++)
+        {
+            // check if the ith bit is set or not
+            if (num & (1 << i))
+            {
+                sub += s[i];
+            }
+        }
+        if (sub.length() > 0)
+        {
+            ans.push_back(sub);
+        }
+    }
+    sort(ans.begin(), ans.end());
+    return ans;
+}
+void printAllSubsequencesOptimal(int ind, int N, int arr[], vector<int> ds)
 {
     if (ind == N)
     {
@@ -83,10 +106,10 @@ void printAllSubsequences(int ind, int N, int arr[], vector<int> ds)
     }
     // Pick
     ds.push_back(arr[ind]);
-    printAllSubsequences(ind + 1, N, arr, ds);
+    printAllSubsequencesOptimal(ind + 1, N, arr, ds);
     // Not Pick
     ds.pop_back();
-    printAllSubsequences(ind + 1, N, arr, ds);
+    printAllSubsequencesOptimal(ind + 1, N, arr, ds);
 }
 
 /*
@@ -760,14 +783,16 @@ vector<string> findPath(vector<vector<int>> &m, int n)
 // Since each digit is greater than the sum of digits on right (except 1, which does not have any digit on its right), 841 is a good number. Similarly, all these numbers are good.
 // Time complexity: O(b * log(b) - a * log(a))
 // Space complexity: O(1)
-bool goodWithoutDigit(int n, int digit) {
+bool goodWithoutDigit(int n, int digit)
+{
     if (n % 10 == digit)
         return false;
 
     int sum = n % 10;
     n = n / 10;
 
-    while (n > 0) {
+    while (n > 0)
+    {
         if (n % 10 == digit || n % 10 <= sum)
             return false;
 
@@ -778,10 +803,12 @@ bool goodWithoutDigit(int n, int digit) {
     return true;
 }
 
-vector<int> goodNumbers(int a, int b, int digit) {
+vector<int> goodNumbers(int a, int b, int digit)
+{
     vector<int> ans;
 
-    for (int i = a; i <= b; i++) {
+    for (int i = a; i <= b; i++)
+    {
         if (goodWithoutDigit(i, digit))
             ans.push_back(i);
     }
@@ -789,21 +816,54 @@ vector<int> goodNumbers(int a, int b, int digit) {
     return ans;
 }
 
-
+// ============================EXTRA============================>>
+/*
+Pow(x, n)
+ANS :
+*/
+// Bruteforce:
+// TC: O(N)
+// SC:
+double myPow(double x, int n)
+{
+    if (n < 0)
+    {
+        x = 1 / x;
+    }
+    long num = abs(n);
+    double pow = 1;
+    while (num)
+    {
+        cout << "Num " << num << endl;
+        cout << "X " << x << endl;
+        cout << "Pow " << pow << endl;
+        if (num & 1)
+            pow *= x;
+        x *= x;
+        num >>= 1;
+    }
+    return pow;
+}
+// Better:
+// TC:
+// SC:
+// Optimal:
+// TC:
+// SC:
 
 int main()
 {
-// #ifndef ONLINE_JUDGE
-//     freopen("./i.txt", "r", stdin);
-//     freopen("./o.txt", "w", stdout);
-// #endif
+    // #ifndef ONLINE_JUDGE
+    //     freopen("./i.txt", "r", stdin);
+    //     freopen("./o.txt", "w", stdout);
+    // #endif
     // First layout column 2 and then new group--->>>
     // Start code from here ------>>
     // int arr[] = {1, 2,3};
     // int N = 3;
     // int K = 2;
     // vector<int> ds;
-    // printAllSubsequences(0, N, arr, ds);
+    // printAllSubsequencesOptimal(0, N, arr, ds);
     // printAllSubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // printAnySubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // cout << countSubsequencesWhoseSumIsK(0, 0, N, arr, K);
@@ -901,8 +961,9 @@ int main()
     //     }
     //     cout << endl;
     // }
-    vector<int>ans=goodNumbers(840,850,6);
-    printVector(ans);
+    // vector<int> ans = goodNumbers(840, 850, 6);
+    // printVector(ans);
+    // cout << "POW " << myPow(2, 10);
 
     // End code here-------->>
     return 0;
