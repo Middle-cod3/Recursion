@@ -1,19 +1,73 @@
-sum 1 :0
-sum 2 :1
-sum 1
-1
-sum 1 :1
-sum 2 :2
-sum 2
-01
-sum 1 :1
-sum 2 :1
-sum 1
-101
-sum 1 :1
-sum 2 :2
-sum 2
-0101
-sum 1
-10101
-10101
+a
+aa
+aaa
+aaaa
+ab
+aba
+abaa
+abaaa
+b
+ba
+baa
+baaa
+===================
+a
+aa
+aaa
+aaaa
+aaac
+aaaca
+aab
+aaba
+aabaa
+aabac
+aabaca
+aabc
+aabca
+aac
+aaca
+ab
+aba
+abaa
+abac
+abaca
+abc
+abca
+ac
+aca
+b
+ba
+baa
+baaa
+baaaa
+baaac
+baaaca
+baab
+baaba
+baabaa
+baabac
+baabaca
+baabc
+baabca
+baac
+baaca
+bab
+baba
+babaa
+babac
+babaca
+babc
+babca
+bac
+baca
+bb
+bba
+bbaa
+bbac
+bbaca
+bbc
+bbca
+bc
+bca
+c
+ca

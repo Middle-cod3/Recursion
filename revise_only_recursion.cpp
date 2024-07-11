@@ -1,6 +1,30 @@
 #include <bits/stdc++.h>
 #include <iostream>
 using namespace std;
+
+#define ll long long
+typedef vector<int> VI;
+typedef vector<vector<int>> VVI;
+typedef vector<vector<vector<int>>> VVVI;
+typedef vector<pair<int, int>> VPI;
+typedef vector<string> VS;
+typedef queue<int> QU;
+typedef queue<pair<int, int>> QP;
+typedef queue<pair<pair<int, int>, int>> QPP;
+#define PB push_back
+#define SZA(arr) (sizeof(arr) / sizeof(arr[0]))
+#define SZ(x) ((int)x.size())
+#define LEN(x) ((int)x.length())
+#define REV(x) reverse(x.begin(), x.end());
+#define trav(a, x) for (auto &a : x)
+#define FOR(i, n) for (int i = 0; i < n; i++)
+#define FORE(i, n) for (int i = 0; i <= n; i++)
+#define FOR_INNER(j, i, n) for (int j = i; j < n; j++)
+#define FOR1(i, n) for (int i = 1; i <= n; i++)
+#define SORT(x) sort(x.begin(), x.end())
+#define MAX(x) *max_element(ALL(x))
+#define MIN(x) *min_element(ALL(x))
+#define SUM(x) accumulate(x.begin(), x.end(), 0LL)
 // Short function start-->>
 void printArray(int arr[], int length)
 {
@@ -56,6 +80,12 @@ void printString(string s, int length)
         cout << s[i] << " ";
     }
 }
+
+/*
+IMPORTANT NOTES :When there is says that count and ways you have to do recusion and retun with +1
+
+ */
+
 // Short function end-->>
 /*
 1. Printing all subsequences
@@ -66,10 +96,10 @@ Tc :- For every index there are couple of options 2^n * for every subsequences w
 Sc :- If you look out recursion tree its going from starting index to ending index not more then
     ending index ,Max recursion calls == size of the array, so its 0(N)
 */
-vector<string> AllPossibleStrings(string s)
+set<string> AllPossibleStrings(string s)
 {
     int n = s.length();
-    vector<string> ans;
+    set<string> ans;
     for (int num = 0; num < (1 << n); num++)
     {
         string sub = "";
@@ -83,10 +113,9 @@ vector<string> AllPossibleStrings(string s)
         }
         if (sub.length() > 0)
         {
-            ans.push_back(sub);
+            ans.insert(sub);
         }
     }
-    sort(ans.begin(), ans.end());
     return ans;
 }
 void printAllSubsequencesOptimal(int ind, int N, int arr[], vector<int> ds)
@@ -722,52 +751,72 @@ string getPermutation(int n, int k)
 14. Rat in a maze
 Ans :-
 */
-void findPathHelper(int i, int j, vector<vector<int>> &a, int n, vector<string> &ans, string move, vector<vector<int>> &vis)
+/*
+Time Complexity (TC) : The time complexity is O(4^(n^2)). This is because, in the worst case, each cell can potentially lead to 4 recursive calls, and there are n^2 cells in the grid.
+Space Complexity (SC) : The space complexity is O(n^2) for the visited matrix vis plus the space used by the recursive call stack, which can go as deep as n^2 in the worst case. Thus, the overall space complexity is O(n^2).
+*/
+/*
+Method Explanation
+Base Case: If the rat reaches the destination (bottom-right corner), the current path is added to the list of solutions.
+Recursive Case: The function explores all four possible directions (down, left, right, up) from the current cell if the move is within bounds, the cell is open (i.e., value is 1), and the cell has not been visited before.
+Backtracking: To ensure that all possible paths are explored, the algorithm uses backtracking. It marks the current cell as visited, makes the recursive call for the next move, and then unmarks the cell (backtracks) to allow for other possible paths.
+
+
+Algorithm
+Initialize the answer vector ans to store all possible paths.
+Initialize the visited matrix vis to track visited cells.
+Check if the starting cell (0, 0) is open. If it is, call the helper function findPathHelper.
+In findPathHelper:
+If the current cell is the destination, add the current path to the answer vector.
+For each possible move (down, left, right, up), check if the move is valid (within bounds, cell is open, and not visited). If valid, mark the current cell as visited, make the recursive call for the move, and then unmark the cell (backtrack).
+*/
+void pathFinder(int i, int j, int n, VVI &a, VS &ans, string move, VVI &vis)
 {
+    // if we reached at destination
     if (i == n - 1 && j == n - 1)
     {
-        ans.push_back(move);
+        ans.PB(move);
         return;
     }
-
-    // downward
+    // Go for all 4 direction
+    // Downward
     if (i + 1 < n && !vis[i + 1][j] && a[i + 1][j] == 1)
     {
         vis[i][j] = 1;
-        findPathHelper(i + 1, j, a, n, ans, move + 'D', vis);
-        vis[i][j] = 0;
+        pathFinder(i + 1, j, n, a, ans, move + "D", vis); // It will go till destination
+        vis[i][j] = 0;                                    // After founded a destination it will back to 0 coz if we find another move
     }
-
-    // left
+    // Left
     if (j - 1 >= 0 && !vis[i][j - 1] && a[i][j - 1] == 1)
     {
         vis[i][j] = 1;
-        findPathHelper(i, j - 1, a, n, ans, move + 'L', vis);
+        pathFinder(i, j - 1, n, a, ans, move + "L", vis);
         vis[i][j] = 0;
     }
-
-    // right
+    // Right
     if (j + 1 < n && !vis[i][j + 1] && a[i][j + 1] == 1)
     {
         vis[i][j] = 1;
-        findPathHelper(i, j + 1, a, n, ans, move + 'R', vis);
+        pathFinder(i, j + 1, n, a, ans, move + "R", vis);
         vis[i][j] = 0;
     }
-
-    // upward
+    // Up
     if (i - 1 >= 0 && !vis[i - 1][j] && a[i - 1][j] == 1)
     {
         vis[i][j] = 1;
-        findPathHelper(i - 1, j, a, n, ans, move + 'U', vis);
+        pathFinder(i - 1, j, n, a, ans, move + "U", vis);
         vis[i][j] = 0;
     }
 }
 vector<string> findPath(vector<vector<int>> &m, int n)
 {
-    vector<string> ans;
-    vector<vector<int>> vis(n, vector<int>(n, 0));
+    VS ans;
+    //  Visited array to keep track of cells
+    VVI vis(n, VI(n, 0));
     if (m[0][0] == 1)
-        findPathHelper(0, 0, m, n, ans, "", vis);
+    {
+        pathFinder(0, 0, n, m, ans, "", vis);
+    } // If starting cell is open
     return ans;
 }
 
@@ -863,6 +912,13 @@ int main()
     // int N = 3;
     // int K = 2;
     // vector<int> ds;
+    set<string> ans = AllPossibleStrings("abaaa");
+    for (auto it : ans)
+        cout << it << endl;
+    cout << "===================" << endl;
+    set<string> ans2 = AllPossibleStrings("baabaca");
+    for (auto it : ans2)
+        cout << it << endl;
     // printAllSubsequencesOptimal(0, N, arr, ds);
     // printAllSubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // printAnySubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
