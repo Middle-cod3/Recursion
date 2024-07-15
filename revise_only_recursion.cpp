@@ -25,6 +25,7 @@ typedef queue<pair<pair<int, int>, int>> QPP;
 #define MAX(x) *max_element(ALL(x))
 #define MIN(x) *min_element(ALL(x))
 #define SUM(x) accumulate(x.begin(), x.end(), 0LL)
+const int MOD = 1e9 + 7;
 // Short function start-->>
 void printArray(int arr[], int length)
 {
@@ -227,7 +228,61 @@ int countSubsequencesWhoseSumIsK(int ind, int sum, int N, int arr[], int K)
     int r = countSubsequencesWhoseSumIsK(ind + 1, sum, N, arr, K);
     return l + r;
 }
+// Memoization
+int perfectSumMemo(int ind, int arr[], int n, int sum, int k, VVI &dp)
+{
+    // Base case
+    if (ind == 0)
+    {
+        if (sum == k)
+            return 1;
+        return 0;
+    }
 
+    // Check if already computed
+    if (dp[ind][sum] != -1)
+        return dp[ind][sum];
+
+    // Do not pick the current element
+    int notPick = perfectSumMemo(ind - 1, arr, n, sum, k, dp);
+
+    // Pick the current element (only if sum+arr[ind-1] <= k to avoid overflow)
+    int pick = 0;
+    if (sum + arr[ind - 1] <= k)
+    {
+        pick = perfectSumMemo(ind - 1, arr, n, sum + arr[ind - 1], k, dp);
+    }
+
+    // Store the result in dp array
+    return dp[ind][sum] = (pick + notPick) % MOD;
+}
+// Tabulation
+int perfectSumTabu(int arr[], int n, int sum)
+{
+    VVI dp(n + 1, VI(sum + 1, 0));
+    // If sum is 0, there's exactly one subset: the empty subset
+    for (int i = 0; i <= n; i++)
+    {
+        dp[i][0] = 1;
+    }
+    // Fill the DP table
+    for (int i = 1; i <= n; i++)
+    {
+        for (int j = 0; j <= sum; j++)
+        {
+            if (arr[i - 1] <= j)
+            {
+                dp[i][j] = (dp[i - 1][j] + dp[i - 1][j - arr[i - 1]]) % MOD;
+            }
+            else
+            {
+                dp[i][j] = dp[i - 1][j] % MOD;
+            }
+        }
+    }
+
+    return dp[n][sum];
+}
 /*
 5. Combination Sum I
 P.Statement :-Input: candidates=[2,3,6,7],target=7 Output:[[2,2,3],[7]]
@@ -923,6 +978,8 @@ int main()
     // printAllSubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // printAnySubsequencesWhoseSumIsK(0, 0, N, arr, ds, K);
     // cout << countSubsequencesWhoseSumIsK(0, 0, N, arr, K);
+    // VVI dp(n + 1, VI(sum + 1, -1));
+    // return perfectSumMemo(n,arr,n,0,sum,dp);
     // vector<int> arr = {1, 2, 3};
     // int target = 2;
     // vector<vector<int>> z = combinationSum(arr, target);
